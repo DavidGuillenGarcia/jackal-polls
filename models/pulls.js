@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const ingredientsSchema = new mongoose.Schema({
+const pollsSchema = new mongoose.Schema({
   poll_name: {
     type: String,
     required: true,
@@ -23,4 +23,4 @@ const ingredientsSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Ingredient", ingredientsSchema);
+module.exports = mongoose.model("Poll", pollsSchema);
