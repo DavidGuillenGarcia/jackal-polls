@@ -21,6 +21,10 @@ const pollsSchema = new mongoose.Schema({
   option_4: {
     type: String,
   },
+  status: {
+    type: String,
+    default: "Open",
+  },
 });
 
 module.exports = mongoose.model("Poll", pollsSchema);
