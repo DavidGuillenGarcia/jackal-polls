@@ -7,6 +7,7 @@ const verifyToken = require("./middlewares/auth");
 
 const usersRouter = require("./routes/users.routes");
 const pollsRouter = require("./routes/polls.routes");
+const votesRouter = require("./routes/votes.routes");
 
 const main = async () => {
   const app = express();
@@ -15,6 +16,7 @@ const main = async () => {
 
   app.use("/", usersRouter);
   app.use("/polls", pollsRouter);
+  app.use("/votes", votesRouter);
 
   dbConnection();
 

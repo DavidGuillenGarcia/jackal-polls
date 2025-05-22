@@ -14,7 +14,7 @@ const votesSchema = new mongoose.Schema({
     required: true,
   },
   option_selected: {
-    type: Number,
+    type: String,
     required: true,
   },
 });
