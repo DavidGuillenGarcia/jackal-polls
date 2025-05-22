@@ -66,10 +66,7 @@ const updatePollById = async (req, res) => {
       if (pollInput.status) {
         updateFilter.status = pollInput.status;
       }
-      const updatedPoll = await Poll.findByIdAndUpdate(
-        { _id: pollInputId },
-        updateFilter
-      );
+      await Poll.findByIdAndUpdate({ _id: pollInputId }, updateFilter);
       res.status(200).send(`Poll ${pollInputId} was updated successfully.`);
     } else {
       res
