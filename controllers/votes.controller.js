@@ -1,3 +1,4 @@
+const Poll = require("../models/polls");
 const Vote = require("../models/votes");
 
 const sendVote = async (req, res) => {
@@ -7,13 +8,17 @@ const sendVote = async (req, res) => {
       user_id: voteInput.user_id,
       poll_id: voteInput.poll_id,
     });
-    console.log(checkVote);
-    if (checkVote == null) {
-      const newVote = new Vote(voteInput);
-      await newVote.save();
-      res
-        .status(201)
-        .send(`You successfully voted on the poll ${newVote.poll_id}`);
+    if (checkVote.length == 0) {
+      const checkStatus = await Poll.findById(voteInput.poll_id);
+      if (checkStatus.status == "open") {
+        const newVote = new Vote(voteInput);
+        await newVote.save();
+        res
+          .status(201)
+          .send(`You successfully voted on the poll ${newVote.poll_id}`);
+      } else {
+        res.status(500).send(`Error: This poll is already closed.`);
+      }
     } else {
       res.status(500).send(`Error: You already voted on this poll.`);
     }
@@ -22,6 +27,59 @@ const sendVote = async (req, res) => {
   }
 };
 
-const checkPollById = async (req, res) => {};
+const checkPollResultById = async (req, res) => {
+  const votePollInputId = req.params._id;
+  if (votePollInputId) {
+    const pollResultOption1 = await Vote.countDocuments({
+      poll_id: votePollInputId,
+      option_selected: "option_1",
+    });
+    const pollResultOption2 = await Vote.countDocuments({
+      poll_id: votePollInputId,
+      option_selected: "option_2",
+    });
+    const pollResultOption3 = await Vote.countDocuments({
+      poll_id: votePollInputId,
+      option_selected: "option_3",
+    });
+    const pollResultOption4 = await Vote.countDocuments({
+      poll_id: votePollInputId,
+      option_selected: "option_4",
+    });
+    const pollOptions = await Poll.findById(votePollInputId);
+    const pollResults = {
+      name: pollOptions.name,
+    };
+    console.log(pollOptions.options);
+    if (pollOptions.options[0].option_1) {
+      pollResults.option_1 = {
+        name: pollOptions.options[0].option_1,
+        votes: pollResultOption1,
+      };
+    }
+    if (pollOptions.options[0].option_2) {
+      pollResults.option_2 = {
+        name: pollOptions.options[0].option_2,
+        votes: pollResultOption2,
+      };
+    }
+    if (pollOptions.options[0].option_3) {
+      pollResults.option_3 = {
+        name: pollOptions.options[0].option_3,
+        votes: pollResultOption3,
+      };
+    }
+    if (pollOptions.options[0].option_4) {
+      pollResults.option_4 = {
+        name: pollOptions.options[0].option_4,
+        votes: pollResultOption4,
+      };
+    }
 
-module.exports = { sendVote, checkPollById };
+    res.status(200).send(pollResults);
+  } else {
+    res.status(404).send("Error: Poll not found.");
+  }
+};
+
+module.exports = { sendVote, checkPollResultById };
