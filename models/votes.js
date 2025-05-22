@@ -3,17 +3,17 @@ const User = require("./users");
 const Poll = require("./polls");
 
 const votesSchema = new mongoose.Schema({
-  userId: {
+  user_id: {
     type: mongoose.Schema.ObjectId,
     ref: User,
     required: true,
   },
-  pollId: {
+  poll_id: {
     type: mongoose.Schema.ObjectId,
     ref: Poll,
     required: true,
   },
-  optionSelected: {
+  option_selected: {
     type: Number,
     required: true,
   },

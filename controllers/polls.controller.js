@@ -1,13 +1,133 @@
-const Poll = require("../models/users");
+const Poll = require("../models/polls");
 
-const createPoll = () => {};
+const createPoll = async (req, res) => {
+  const pollInput = req.body;
+  if (pollInput) {
+    const newPoll = new Poll(pollInput);
+    await newPoll.save();
+    res.status(201).send(`Poll ${newPoll._id} created sucessfully`);
+  } else {
+    res.status(500).send("Error: Poll name is required");
+  }
+};
 
-const updatePoll = () => {};
+const getPollById = async (req, res) => {
+  const pollInputId = req.params._id;
+  const selectedPoll = await Poll.findById(pollInputId);
+  if (selectedPoll) {
+    res.status(200).send(selectedPoll);
+  } else {
+    res.status(404).send(`Error: Could not find the poll`);
+  }
+};
 
-const updatePollStatus = () => {};
+const getPolls = async (req, res) => {
+  const pollStatusInput = req.query.status;
+  if (!pollStatusInput) {
+    const pollsFound = await Poll.find({});
+    res.status(200).send(pollsFound);
+  }
+  if (pollStatusInput == "open") {
+    const pollsFiltered = await Poll.find({ status: "open" });
+    res.status(200).send(pollsFiltered);
+  }
+  if (pollStatusInput == "closed") {
+    const pollsFiltered = await Poll.find({
+      status: "closed",
+    });
+    res.status(200).send(pollsFiltered);
+  } else {
+    res.status(404).send("Error: No polls found.");
+  }
+};
 
-const getPollById = () => {};
+const updatePollById = async (req, res) => {
+  const pollInputId = req.params._id;
+  if (pollInputId) {
+    const pollInput = req.body;
+    if (pollInput) {
+      const updateFilter = {};
 
-const getPollByStatus = () => {};
+      if (pollInput.poll_name) {
+        updateFilter.poll_name = pollInput.poll_name;
+      }
+      if (pollInput.option_1) {
+        updateFilter.option_1 = pollInput.option_1;
+      }
+      if (pollInput.option_2) {
+        updateFilter.option_2 = pollInput.option_2;
+      }
+      if (pollInput.option_3) {
+        updateFilter.option_3 = pollInput.option_3;
+      }
+      if (pollInput.option_4) {
+        updateFilter.option_4 = pollInput.option_4;
+      }
+      if (pollInput.status) {
+        updateFilter.status = pollInput.status;
+      }
+      const updatedPoll = await Poll.findByIdAndUpdate(
+        { _id: pollInputId },
+        updateFilter
+      );
+      res.status(200).send(`Poll ${pollInputId} was updated successfully.`);
+    } else {
+      res
+        .status(500)
+        .send(
+          "Error: No changes found, you need to do 1 change at least to update the poll."
+        );
+    }
+  } else {
+    res.status(404).send("Error: Poll not found.");
+  }
+};
 
-const getAllPolls = () => {};
+const updatePollStatusById = async (req, res) => {
+  const pollInputId = req.params._id;
+
+  if (pollInputId) {
+    const pollInputStatus = req.body.status;
+
+    if (!pollInputStatus) {
+      res
+        .status(500)
+        .send(
+          "Error: A new status is required, you can use 'open' or 'closed'."
+        );
+    } else {
+      const selectedPoll = await Poll.findById(pollInputId);
+
+      if (!selectedPoll) {
+        res.status(404).send("Error: Poll not found.");
+      }
+      if (pollInputStatus == "open" || pollInputStatus == "closed") {
+        await Poll.findByIdAndUpdate(
+          { _id: pollInputId },
+          {
+            status: pollInputStatus,
+          }
+        );
+        res
+          .status(201)
+          .send(`Poll status updated successfully to ${pollInputStatus}`);
+      } else {
+        res
+          .status(500)
+          .send(
+            `Error: ${pollInputStatus} is not a valid status, you can use 'open' or 'closed'`
+          );
+      }
+    }
+  } else {
+    res.status(404).send("Error: Poll not found.");
+  }
+};
+
+module.exports = {
+  createPoll,
+  updatePollById,
+  updatePollStatusById,
+  getPollById,
+  getPolls,
+};

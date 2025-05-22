@@ -8,12 +8,10 @@ const pollsSchema = new mongoose.Schema({
   option_1: {
     type: String,
     default: "Yes",
-    required: true,
   },
   option_2: {
     type: String,
     default: "No",
-    required: true,
   },
   option_3: {
     type: String,
@@ -23,7 +21,7 @@ const pollsSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: "Open",
+    default: "open",
   },
 });
 
