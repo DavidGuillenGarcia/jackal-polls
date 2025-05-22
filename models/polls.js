@@ -1,17 +1,13 @@
 const mongoose = require("mongoose");
 
-const pollsSchema = new mongoose.Schema({
-  poll_name: {
+const optionsSchema = new mongoose.Schema({
+  option_1: {
     type: String,
     required: true,
   },
-  option_1: {
-    type: String,
-    default: "Yes",
-  },
   option_2: {
     type: String,
-    default: "No",
+    required: true,
   },
   option_3: {
     type: String,
@@ -19,6 +15,14 @@ const pollsSchema = new mongoose.Schema({
   option_4: {
     type: String,
   },
+});
+
+const pollsSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  options: [optionsSchema],
   status: {
     type: String,
     default: "open",

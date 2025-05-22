@@ -2,10 +2,32 @@ const Poll = require("../models/polls");
 
 const createPoll = async (req, res) => {
   const pollInput = req.body;
-  if (pollInput) {
-    const newPoll = new Poll(pollInput);
-    await newPoll.save();
-    res.status(201).send(`Poll ${newPoll._id} created sucessfully`);
+
+  if (pollInput.name) {
+    if (!pollInput.options) {
+      pollInput.options = {
+        option_1: "yes",
+        option_2: "no",
+      };
+
+      const newPoll = new Poll(pollInput);
+      await newPoll.save();
+      res.status(201).send(`Poll created ${newPoll._id} sucessfully`);
+      return;
+    }
+    if (pollInput.options.option_1 && !pollInput.options.option_2) {
+      res
+        .status(500)
+        .send(
+          `Error: At least 2 options are required, you can let all the options empty for a "yes" or "no" options.`
+        );
+      return;
+    } else {
+      const newPoll = new Poll(pollInput);
+      await newPoll.save();
+      res.status(201).send(`Poll ${newPoll._id} created sucessfully`);
+      return;
+    }
   } else {
     res.status(500).send("Error: Poll name is required");
   }
@@ -48,8 +70,8 @@ const updatePollById = async (req, res) => {
     if (pollInput) {
       const updateFilter = {};
 
-      if (pollInput.poll_name) {
-        updateFilter.poll_name = pollInput.poll_name;
+      if (pollInput.name) {
+        updateFilter.name = pollInput.name;
       }
       if (pollInput.option_1) {
         updateFilter.option_1 = pollInput.option_1;
