@@ -1,6 +1,6 @@
 ```mermaid
 ---
-title: Library Design
+title: Jackal Polls Design
 ---
 erDiagram
 
